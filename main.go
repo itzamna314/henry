@@ -42,7 +42,6 @@ func (bot *Bot) Listen() error {
 		m, err := bot.receive()
 		if err != nil {
 			fmt.Println(err.Error())
-			bot.reply(m, err.Error())
 			continue
 		}
 
