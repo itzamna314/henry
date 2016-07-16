@@ -1,6 +1,6 @@
 henry
 =====
-A tiny, no bs Slackbot in Go
+A simple, no bs Slackbot in Go
 
 ## Quickstart
 
@@ -43,4 +43,8 @@ func weatherHandler(message *henry.Message) string {
 }
 ```
 
-_Inspired and based off [mybot](https://github.com/rapidloop/mybot)_
+## License
+MIT
+
+## Credits
+_Inspired by [mybot](https://www.opsdash.com/blog/slack-bot-in-golang.html)_
