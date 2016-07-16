@@ -2,10 +2,9 @@ package henry
 
 import (
 	"fmt"
+	"golang.org/x/net/websocket"
 	"strings"
 	"sync/atomic"
-
-	"golang.org/x/net/websocket"
 )
 
 type Bot struct {
@@ -42,7 +41,6 @@ func (bot *Bot) Listen() error {
 		m, err := bot.receive()
 		if err != nil {
 			fmt.Println(err.Error())
-			bot.reply(m, err.Error())
 			continue
 		}
 
@@ -57,9 +55,15 @@ func (bot *Bot) Listen() error {
 		}
 
 		// TODO: Don't let this blow up
-		resp := handler.Fn(m)
+		resp, err := handler.Fn(m)
 
-		bot.reply(m, resp)
+		if err == nil {
+			bot.reply(m, resp)
+		} else if usageErr, ok := err.(UsageError); ok {
+			bot.reply(m, usageErr.UsageMessage)
+		} else {
+			fmt.Printf("Handler returned error: %s\n", err)
+		}
 	}
 }
 
@@ -74,11 +78,11 @@ type Message struct {
 }
 
 type Handler struct {
-	Fn func(*Message) string
+	Fn func(*Message) (string, error)
 }
 
 // Handle registers a handler for a command
-func (bot *Bot) Handle(cmd string, handler func(*Message) string) {
+func (bot *Bot) Handle(cmd string, handler func(*Message) (string, error)) {
 	bot.handlers[cmd] = Handler{Fn: handler}
 }
 
